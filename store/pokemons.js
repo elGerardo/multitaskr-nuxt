@@ -28,5 +28,9 @@ export const actions = {//crear funciones
     async find({commit}, pokemon){
         let response = await this.$axios.get('https://pokeapi.co/api/v2/pokemon/' + pokemon);
         commit('pokemon', response.data);
+    },
+
+    null({commit}){
+        commit('pokemon', null);
     }
 }
