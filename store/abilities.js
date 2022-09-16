@@ -6,13 +6,13 @@ export const state = () => ({//declarar variables
 })
 
 export const getters = {//tomar variables
-    items: state => state.abilities,
+    items: state => state.items,
     ability: state => state.ability
 }
 
 export const mutations = {
     items(state, data) {
-        state.abilities = data;
+        state.items = data;
     },
     ability(state, data) {
         state.ability = data;
@@ -20,8 +20,12 @@ export const mutations = {
 }
 
 export const actions = {
-    async get({commit}){
-        let response = await this.$axios.get('https://pokeapi.co/api/v2/ability');
+    async get({commit}, params){
+        let response = await this.$axios.get('https://pokeapi.co/api/v2/ability',
+        {
+            params: params,
+        });
+        console.log(response.data)
         commit('items', response.data);
     },
 

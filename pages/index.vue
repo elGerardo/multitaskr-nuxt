@@ -1,5 +1,8 @@
 <template>
-    <div class="mx-auto" style="width: 90%">
+    <b-container>
+        <h2>Pokemon</h2>
+        <p>{{this.loading}}</p>
+        <Pagination :value="form" />
         <b-table-simple striped hover>
             <thead>
                 <tr>
@@ -9,7 +12,7 @@
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="pokemon in pokemons.results">
+                <tr v-for="pokemon in pokemons.results" :key="pokemon.name">
                     <td>{{ pokemon.name }}</td>
                     <td>{{ pokemon.url }}</td>
                     <td>
@@ -65,7 +68,10 @@
                 <b-collapse id="collapse-moves">
                     <b-card>
                         <b-list-group>
-                            <b-list-group-item v-for="move in pokemon.moves" :key="move.name">
+                            <b-list-group-item
+                                v-for="move in pokemon.moves"
+                                :key="move.name"
+                            >
                                 {{ move.move.name }}
                             </b-list-group-item>
                         </b-list-group>
@@ -73,20 +79,51 @@
                 </b-collapse>
             </div>
         </b-modal>
-    </div>
+    </b-container>
 </template>
 
 <script>
+import { debounce } from "lodash";
 import { mapGetters } from "vuex";
+import Pagination from "../components/Pagination.vue";
 export default {
-    async fetch({ store }) {
-        //es exclusivo de 'pages'
-        await store.dispatch("pokemons/get");
+    components: {
+        Pagination,
+    },
+
+    async fetch({ store, route }) {
+        //fetch no contiene .this
+        await store.dispatch("pokemons/get", route.query); //es exclusivo de 'pages'
+        //        let pokemon = store.getters["pokemons/pokemon"];
+    },
+
+    data() {
+        let query = this.$route.query;
+
+        return {
+            form: {
+                limit: query.limit == undefined ? 20 : parseInt(query.limit),
+                offset: query.offset == undefined ? 0 : parseInt(query.offset),
+                search: query.limit ?? "0",
+            },
+        };
+    },
+
+    watch: {
+        form: {
+            deep: true,
+            handler: debounce(async function (value) {
+                this.$router.push({
+                    query: value,
+                });
+                await this.$store.dispatch("pokemons/get", value);
+            }, 2000),
+        },
     },
 
     computed: {
         ...mapGetters({
-            //... sirve para mezclar objetos
+            //... sirve para mezclar objetos o declarar funciones dentro de objetos
             pokemons: "pokemons/items",
             pokemon: "pokemons/pokemon",
         }),
@@ -94,15 +131,11 @@ export default {
 
     methods: {
         async loadModal(pokemon) {
-
-            this.$store.dispatch("pokemons/null");
-
+            this.$store.commit("pokemons/pokemon", null); //entra directamente a la mutation
             await setTimeout(() => {
                 this.$store.dispatch("pokemons/find", pokemon);
             }, 2000);
         },
     },
-
-    mounted() {},
 };
 </script>
