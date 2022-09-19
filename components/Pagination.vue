@@ -20,12 +20,12 @@
                 <b-button-group>
                     <b-button
                         :disabled="form.offset == 0 || loading"
-                        @click="form.offset -= form.limit, loading = true"
+                        @click="form.offset -= form.limit"
                         >Previous</b-button
                     >
                     <b-button
-                        :disabled="loading"
-                        @click="form.offset += form.limit, loading = true"
+                        :disabled="loading || form.offset + form.limit >= count"
+                        @click="form.offset += form.limit"
                         >Next</b-button
                     >
                 </b-button-group>
@@ -35,30 +35,37 @@
 </template>
 
 <script>
-import { debounce } from "lodash";
 export default {
-    props: ["value"],
+    props: ["value", "counted"],
 
     data() {
+        let query = this.$route.query;
         return {
-            form: this.value,
-            loading: false,
+            form: {
+                limit: query.limit == undefined ? 20 : parseInt(query.limit),
+                offset: query.offset == undefined ? 0 : parseInt(query.offset),
+                search: query.limit ?? 0,
+            },
+            count: this.counted,
         };
+    },
+
+    computed:{
+        loading: ({value}) => value
     },
 
     watch: {
         form: {
             deep: true,
             handler(value) {
-                this.loading = true;
-                this.$emit("input", value);
+                this.$emit("input", true);
+                this.$router.push({
+                    query: value,
+                });
+                
             },
         },
-        loading: {
-            handler: debounce(function(value) {
-                this.loading = false;
-            }, 2000),
-        },
+        
     },
 };
 </script>

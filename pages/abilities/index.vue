@@ -1,7 +1,7 @@
 <template>
     <b-container>
         <h2>Abilities</h2>
-        <Pagination :value="form" :load="loading" />
+        <Pagination :counted="count" v-model="loading" />
         <b-table-simple striped hover>
             <thead>
                 <tr>
@@ -33,27 +33,18 @@ export default {
     },
 
     data() {
-        let query = this.$route.query;
         return {
-            form: {
-                limit: query.limit == undefined ? 20 : parseInt(query.limit),
-                offset: query.offset == undefined ? 0 : parseInt(query.offset),
-                search: query.limit ?? null,
-            },
+            count: this.abilites == undefined ? 0 : parseInt(this.abilites.count),
             loading: false,
         };
     },
 
     watch: {
-        form: {
+        '$route.query': {
             deep: true,
             handler: debounce(async function (value) {
-                this.loading = false;
-                this.$router.push({
-                    query: value,
-                });
                 await this.$store.dispatch("abilities/get", value);
-                this.loading = true;
+                this.loading = false;
             }, 2000),
         },
     },
@@ -63,5 +54,10 @@ export default {
             abilites: "abilities/items",
         }),
     },
+
+    created(){
+        this.count = this.abilites.count;
+        console.log(this.count)
+    }
 };
 </script>

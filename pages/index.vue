@@ -1,8 +1,7 @@
 <template>
     <b-container>
         <h2>Pokemon</h2>
-        <p>{{this.loading}}</p>
-        <Pagination :value="form" />
+        <Pagination v-model="loading" :counted="count" />
         <b-table-simple striped hover>
             <thead>
                 <tr>
@@ -93,30 +92,24 @@ export default {
 
     async fetch({ store, route }) {
         //fetch no contiene .this
-        await store.dispatch("pokemons/get", route.query); //es exclusivo de 'pages'
+        await store.dispatch("pokemons/get", route.query); //esta funcion exclusiva de 'pages'
         //        let pokemon = store.getters["pokemons/pokemon"];
     },
 
     data() {
-        let query = this.$route.query;
-
         return {
-            form: {
-                limit: query.limit == undefined ? 20 : parseInt(query.limit),
-                offset: query.offset == undefined ? 0 : parseInt(query.offset),
-                search: query.limit ?? "0",
-            },
+            count:
+                this.pokemons == undefined ? 0 : parseInt(this.pokemons.count),
+            loading: false,
         };
     },
 
     watch: {
-        form: {
+        "$route.query": {
             deep: true,
             handler: debounce(async function (value) {
-                this.$router.push({
-                    query: value,
-                });
                 await this.$store.dispatch("pokemons/get", value);
+                this.loading = false;
             }, 2000),
         },
     },
@@ -136,6 +129,10 @@ export default {
                 this.$store.dispatch("pokemons/find", pokemon);
             }, 2000);
         },
+    },
+
+    created() {
+        this.count = this.pokemons.count;
     },
 };
 </script>

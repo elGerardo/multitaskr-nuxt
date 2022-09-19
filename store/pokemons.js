@@ -19,12 +19,12 @@ export const mutations = {
     },
     pokemon(state, data) {
         state.pokemon = data;
-    },
+    }
 };
 
 export const actions = {
     //crear funciones
-    async get({ commit }, params) {
+    async get({ commit }, params) { // dentro de los parametros de la funcion, el primero siempre es el contexto
         //        let query =  Object.keys(params).map( key => key + '=' + params[key] ).join('&');
         let response = await this.$axios.get(
             "https://pokeapi.co/api/v2/pokemon",
@@ -32,7 +32,7 @@ export const actions = {
                 params: params,
             }
         );
-        commit("items", response.data); //data viene por defecto para axios
+        commit("items", response.data);//data viene por defecto para axios
     },
 
     async find({ commit }, pokemon) {
