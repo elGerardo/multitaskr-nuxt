@@ -34,7 +34,7 @@
                 </b-form-invalid-feedback>
             </b-form-group>
 
-            <b-form-group label="Last Name" label-for="email">
+            <b-form-group label="Email" label-for="email">
                 <b-form-input
                     id="email"
                     v-model="form.email"
@@ -50,7 +50,7 @@
                 </b-form-invalid-feedback>
             </b-form-group>
 
-            <b-form-group label="Last Name" label-for="phone">
+            <b-form-group label="Phone" label-for="phone">
                 <b-form-input
                     id="phone"
                     v-model="form.phone"
