@@ -20,7 +20,10 @@
                         >Locations</b-dropdown-item
                     >
                     <b-dropdown-item href="/users/create"
-                        >Users Create</b-dropdown-item
+                        >Create User</b-dropdown-item
+                    >
+                    <b-dropdown-item href="/users/avatar"
+                        >Avatar</b-dropdown-item
                     >
                 </b-nav-item-dropdown>
             </b-container>
