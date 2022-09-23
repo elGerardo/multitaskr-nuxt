@@ -2,14 +2,14 @@
     <b-container>
         <h2>Confirm Information</h2>
         <p>Make sure your info is complete so you can download your report.</p>
-        <form @submit.prevent="onSubmit" class="needs-validation">
+        <form @submit.prevent="onSubmit" @keyup="clearError" class="needs-validation">
             <b-row>
                 <b-col>
                     <b-form-group label="First Name" label-for="name">
                         <b-form-input
                             id="name"
+                            name="name"
                             v-model="form.name"
-                            @change="validateFields"
                             placeholder="Enter first name"
                             :state="hasError('name')"
                         ></b-form-input>
@@ -29,9 +29,9 @@
                     <b-form-group label="Last Name" label-for="last_name">
                         <b-form-input
                             id="last_name"
+                            name="last_name"
                             v-model="form.last_name"
                             placeholder="Enter last name"
-                            @change="validateFields"
                             :state="hasError('last_name')"
                         ></b-form-input>
                         <b-form-invalid-feedback>
@@ -52,9 +52,9 @@
                     <b-form-group label="Email" label-for="email">
                         <b-form-input
                             id="email"
+                            name="email"
                             v-model="form.email"
                             placeholder="Enter email"
-                            @change="validateFields"
                             :state="hasError('email')"
                         ></b-form-input>
                         <b-form-invalid-feedback>
@@ -73,9 +73,9 @@
                     <b-form-group label="Phone number" label-for="phone">
                         <b-form-input
                             id="phone"
+                            name="phone"
                             v-model="form.phone"
                             placeholder="Enter phone number"
-                            @change="validateFields"
                             :state="hasError('phone')"
                         ></b-form-input>
                         <b-form-invalid-feedback>
@@ -106,7 +106,6 @@ export default {
                 phone: null,
                 deal_uid: "1ba8444e-df99-4439-9d71-82301d773c3c",
             },
-            errors: {},
         };
     },
 
@@ -116,27 +115,9 @@ export default {
                 await this.$store.dispatch("users/create", this.form);
             } catch (e) {
                 console.error(e);
-                console.log(e.response.data.errors);
-                this.errors = e.response.data.errors;
+//                console.log(e.response.data.errors);
             }
         },
-        hasError(property) {
-            if (Object.keys(this.errors).length == 0) return null;
-            return !this.errors.hasOwnProperty(property);
-        },
-        validateFields(event){
-            let inputs = document.getElementsByTagName('input');
-            
-            let fields = Array.prototype.filter.call(inputs, function(input) {
-                if( input.value != '' && input.value != undefined ) 
-                {
-                    input.classList.add('is-valid');
-                    input.classList.remove('is-invalid');
-                }else{
-                    input.classList.remove('is-valid');
-                }
-            });
-        }
     },
 };
 </script>

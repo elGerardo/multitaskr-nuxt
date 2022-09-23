@@ -3,6 +3,7 @@
         <b-navbar type="dark" variant="dark" toggleable="">
             <b-container>
                 <b-navbar-brand href="/">Pokemon API</b-navbar-brand>
+                <p>{{ user.email }}</p>
                 <b-nav-item-dropdown
                     text="Sections"
                     type="light"

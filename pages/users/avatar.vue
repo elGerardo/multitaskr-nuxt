@@ -1,17 +1,17 @@
 <template>
     <b-container>
         <h2>Avatar</h2>
-        <p>Avatar</p>
         <form @submit.prevent="onSubmit">
             <b-row>
                 <b-col>
-                    <b-form-group label="Avatar" label-for="file">
+                    <b-form-group label="Upload..." label-for="file">
                         <b-form-file
                             id="file"
-                            v-model="form.files"
-                            placeholder="Enter file"
-                            @change="onFileChange"
+                            placeholder="Upload image"
                             :multiple="true"
+                            v-model="images"
+                            accept=".jpg, .png, .webp, .jpeg"
+                            drop-placeholder="Upload Image(s)"
                         ></b-form-file>
                         <b-form-invalid-feedback>
                             <p v-if="errors.name">
@@ -26,11 +26,51 @@
                     </b-form-group>
                 </b-col>
             </b-row>
-            <div v-for="image in images" :key="image">
-                <b-img-lazy :src="image" />
-            </div>
+            <b-card-group deck>
+                <div v-for="(image, index) in images" :key="image.imageUrl">
+                    <b-card
+                        :img-src="getCreateObjectURL(image)"
+                        :title="image.name"
+                        img-top
+                        style="max-width: 200px"
+                        class="mb-2"
+                    >
+                        <b-card-text>
+                            {{ image.size }} bytes
 
-            <b-button type="submit" variant="primary">Submit</b-button>
+                            <b-button
+                                :id="`${index}_btn_open_options`"
+                                @click="openOptions(index)"
+                                >Remove</b-button
+                            >
+                            <div :id="`${index}_container_options`" hidden>
+                                <b-button
+                                    variant="danger"
+                                    @click="removeImage(index, image.name)"
+                                    >Yes, remove It!</b-button
+                                >
+                                <b-button
+                                    variant="primary"
+                                    @click="closeOptions(index)"
+                                    >No, don't remove it</b-button
+                                >
+                            </div>
+                        </b-card-text>
+                    </b-card>
+                </div>
+            </b-card-group>
+            <b-button
+                type="submit"
+                :disabled="images.length == 0"
+                variant="primary"
+                >Submit</b-button
+            >
+            <b-button
+                :disabled="images.length == 0"
+                @click="clearGroupImages"
+                variant="secondary"
+                >Clear</b-button
+            >
         </form>
     </b-container>
 </template>
@@ -39,7 +79,6 @@ export default {
     data() {
         return {
             form: {
-                files: null,
                 deal_uid: "1ba8444e-df99-4439-9d71-82301d773c3c",
             },
             images: [],
@@ -48,39 +87,62 @@ export default {
     },
 
     methods: {
-        async onSubmit(event) {           
-            let files = this.form.files;
+        async onSubmit(event) {
+            let files = this.images;
             let formData = new FormData();
             for (let index = 0; index < files.length; index++) {
-                console.log(files[index]);
-                formData.append("image[]", files[index], files[index].name);
+                formData.append(
+                    "image[]",
+                    files[index],
+                    files[index].name
+                );
             }
             try {
                 await this.$store.dispatch("users/create", formData);
             } catch (e) {
                 console.error(e);
-//                console.log(e.response.data.errors);
-//                this.errors = e.response.data.errors;
+                //                console.log(e.response.data.errors);
+                //                this.errors = e.response.data.errors;
             }
         },
         hasError(property) {
             if (Object.keys(this.errors).length == 0) return null;
             return !this.errors.hasOwnProperty(property);
         },
-        onFileChange(event) {
-            console.log(event.target.files);
-            let files = event.target.files;
-            for (let index = 0; index < files.length; index++) {
-                this.images.push(URL.createObjectURL(files[index]));
-            }
-            /*Array.prototype.filter.call( files, function(file){
-                //un filter.call siempre espera un return
-                //y funcionara bajo una condicion, donde
-                //si algun elemento no cumple dentro de array
-                //lo elimina
-            });*/
-            //this.image = arrayFiles;
+        openOptions(index) {
+            document.getElementById(index + "_btn_open_options").hidden = true;
+            document.getElementById(
+                index + "_container_options"
+            ).hidden = false;
         },
+        closeOptions(index) {
+            document.getElementById(index + "_btn_open_options").hidden = false;
+            document.getElementById(index + "_container_options").hidden = true;
+        },
+        removeImage(index, imageName) {
+            this.closeOptions(index);
+            this.images.splice(index, 1);
+            this.$bvToast.toast(`${imageName} was removed correctly.`, {
+                title: `${imageName} Removed`,
+                autoHideDelay: 2500,
+                appendToast: false,
+            });
+        },
+        clearGroupImages() {
+            this.images = [];
+        },
+        getCreateObjectURL(image){
+            console.log(image)
+            return URL.createObjectURL(image);
+        }
+
     },
 };
+/*Array.prototype.filter.call( files, function(file){
+    //un filter.call siempre espera un return
+    //y funcionara bajo una condicion, donde
+    //si algun elemento no cumple dentro de array
+    //lo elimina
+});*/
+//this.image = arrayFiles;
 </script>
