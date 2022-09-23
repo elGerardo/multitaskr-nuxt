@@ -86,6 +86,7 @@ import { debounce } from "lodash";
 import { mapGetters } from "vuex";
 import Pagination from "../components/Pagination.vue";
 export default {
+    middleware: 'auth',
     components: {
         Pagination,
     },

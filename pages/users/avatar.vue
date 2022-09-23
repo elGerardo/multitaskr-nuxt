@@ -8,10 +8,10 @@
                         <b-form-file
                             id="file"
                             placeholder="Upload image"
-                            @change="onFileChange"
                             :multiple="true"
+                            v-model="images"
                             accept=".jpg, .png, .webp, .jpeg"
-                            drop-placeholder="Drop Image(s)"
+                            drop-placeholder="Upload Image(s)"
                         ></b-form-file>
                         <b-form-invalid-feedback>
                             <p v-if="errors.name">
@@ -29,14 +29,14 @@
             <b-card-group deck>
                 <div v-for="(image, index) in images" :key="image.imageUrl">
                     <b-card
-                        :img-src="image.imageUrl"
-                        :title="image.files.name"
+                        :img-src="getCreateObjectURL(image)"
+                        :title="image.name"
                         img-top
                         style="max-width: 200px"
                         class="mb-2"
                     >
                         <b-card-text>
-                            {{ image.files.size }} bytes
+                            {{ image.size }} bytes
 
                             <b-button
                                 :id="`${index}_btn_open_options`"
@@ -46,7 +46,7 @@
                             <div :id="`${index}_container_options`" hidden>
                                 <b-button
                                     variant="danger"
-                                    @click="removeImage(index, image.files.name)"
+                                    @click="removeImage(index, image.name)"
                                     >Yes, remove It!</b-button
                                 >
                                 <b-button
@@ -91,11 +91,10 @@ export default {
             let files = this.images;
             let formData = new FormData();
             for (let index = 0; index < files.length; index++) {
-                console.log(files[index]);
                 formData.append(
                     "image[]",
-                    files[index].files,
-                    files[index].files.name
+                    files[index],
+                    files[index].name
                 );
             }
             try {
@@ -110,23 +109,6 @@ export default {
             if (Object.keys(this.errors).length == 0) return null;
             return !this.errors.hasOwnProperty(property);
         },
-        onFileChange(event) {
-            //let files = event.target.files;
-            /*for (let index = 0; index < files.length; index++) {
-                
-            }*/
-
-            let files = event.target.files;
-            Object.keys(files).map((file) => {
-
-                let jsonObject = {
-                    imageUrl: URL.createObjectURL(files[file]),
-                    files: files[file],
-                };
-                this.images.push(jsonObject);
-            
-            });
-        },
         openOptions(index) {
             document.getElementById(index + "_btn_open_options").hidden = true;
             document.getElementById(
@@ -138,7 +120,7 @@ export default {
             document.getElementById(index + "_container_options").hidden = true;
         },
         removeImage(index, imageName) {
-            this.thinking = false;
+            this.closeOptions(index);
             this.images.splice(index, 1);
             this.$bvToast.toast(`${imageName} was removed correctly.`, {
                 title: `${imageName} Removed`,
@@ -149,6 +131,11 @@ export default {
         clearGroupImages() {
             this.images = [];
         },
+        getCreateObjectURL(image){
+            console.log(image)
+            return URL.createObjectURL(image);
+        }
+
     },
 };
 /*Array.prototype.filter.call( files, function(file){
