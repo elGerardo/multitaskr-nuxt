@@ -1,6 +1,14 @@
 <template>
     <b-container>
-        <h2>Pokemon</h2>
+        <h1>{{ "Pokemon" | toUpper }}</h1>
+        <b-form-input type="number" v-model="n1"> </b-form-input>
+        <b-form-input type="number" v-model="n2"> </b-form-input>
+        <p>{{ 0 | sum(n1, n2) | fixedThree }}</p>
+        <b-form-input type="date" v-model="date1"> </b-form-input>
+        <p>{{ date1 | formatDate }}</p>
+        <b-form-input type="date" v-model="date2"> </b-form-input>
+        <p>{{ date2 | formatDate }}</p>
+        <p>Difference Days: {{ date1 | differenceDate(date2) }}</p>
         <Pagination v-model="loading" :counted="count" />
         <b-table-simple striped hover>
             <thead>
@@ -86,7 +94,7 @@ import { debounce } from "lodash";
 import { mapGetters } from "vuex";
 import Pagination from "../components/Pagination.vue";
 export default {
-    middleware: 'auth',
+    middleware: "auth",
     components: {
         Pagination,
     },
@@ -102,6 +110,10 @@ export default {
             count:
                 this.pokemons == undefined ? 0 : parseInt(this.pokemons.count),
             loading: false,
+            n1: 0,
+            n2: 0,
+            date1: "",
+            date2: "",
         };
     },
 
@@ -121,6 +133,10 @@ export default {
             pokemons: "pokemons/items",
             pokemon: "pokemons/pokemon",
         }),
+    },
+
+    filter: {
+        //filter methods
     },
 
     methods: {
