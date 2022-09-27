@@ -7,7 +7,7 @@ Vue.mixin({
             return this.errors.hasOwnProperty(property) ? false : null;
         },
         clearError(event){
-            console.log(event.target.name)
+            console.log(event.target.name);
             this.$store.commit("clearError", event.target.name)
         },
     },
@@ -18,3 +18,8 @@ Vue.mixin({
         }),
     },
 });
+
+
+
+
+

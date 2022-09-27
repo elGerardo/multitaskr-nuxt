@@ -28,13 +28,16 @@ export default {
     plugins: [
       "~/plugins/mixins.js",
       "~/plugins/axios.js",
+      "~/plugins/filters.js",
     ],
 
     // Auto import components: https://go.nuxtjs.dev/config-components
     components: true,
 
     // Modules for dev and build (recommended): https://go.nuxtjs.dev/config-modules
-    buildModules: [],
+    buildModules: [
+        '@nuxtjs/moment',
+    ],
 
     // Modules: https://go.nuxtjs.dev/config-modules
     modules: [
