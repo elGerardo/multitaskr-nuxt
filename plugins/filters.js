@@ -22,3 +22,16 @@ Vue.filter("fixedThree", function (value) {
     let result = parseFloat(value);
     return result.toFixed(3);
 });
+
+Vue.filter("validateProfile", function (value) {
+    if (value == null) return "https://www.gravatar.com/avatar?d=mp&s=400";
+});
+
+Vue.filter("validateData", function (value, message) {
+    if (value == null) return "No " + message + " To Show";
+    return value;
+});
+
+Vue.filter("specialitiesFilter", function (value) {
+    if (value.length == 0) return "No Data To Show";
+});
